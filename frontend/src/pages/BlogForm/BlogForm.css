@@ -1,0 +1,22 @@
+.blog-form {
+  max-width: 760px;
+  margin: 24px auto;
+  background: #fff;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,.08);
+}
+.blog-form h2 { font-size: 24px; font-weight: 800; margin-bottom: 14px; }
+.blog-form input {
+  width: 100%; border: 1px solid #d1d5db; border-radius: 8px;
+  padding: 10px; font-size: 15px; margin-bottom: 12px;
+}
+.file-label {
+  display: inline-flex; align-items: center; gap: 8px; margin: 8px 0;
+}
+.file-label input { border: none; padding: 0; }
+.preview { height: 200px; border-radius: 8px; margin: 10px 0; object-fit: cover; }
+.blog-form button {
+  background: #2563eb; color: #fff; padding: 10px 16px; border-radius: 8px; font-weight: 700;
+}
+.blog-form button:hover { background: #1e40af; }

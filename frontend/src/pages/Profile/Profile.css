@@ -1,0 +1,22 @@
+.profile {
+  max-width: 640px;
+  max-height: 1000px;
+  margin: 110px auto;
+  background: #fff;
+  padding: 22px;
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0,0,0,.08);
+  text-align: center;
+}
+.profile h2 { font-size: 22px; font-weight: 700; margin-bottom: 10px; }
+.profile p { margin: 6px 0; }
+.profile .role { color: #2563eb; font-weight: 600; }
+.profile button {
+  margin-top: 16px;
+  background: #ef4444;
+  color: #fff;
+  padding: 10px 16px;
+  border-radius: 8px;
+  font-weight: 600;
+}
+.profile button:hover { background: #dc2626; }

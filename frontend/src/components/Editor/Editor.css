@@ -1,0 +1,10 @@
+.editor-container {
+  border: 1px solid #d1d5db;
+  border-radius: 10px;
+  background: #fff;
+  overflow: hidden;
+}
+.ql-container {
+  min-height: 280px;
+  font-size: 15px;
+}

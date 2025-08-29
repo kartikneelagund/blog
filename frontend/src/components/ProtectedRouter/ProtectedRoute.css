@@ -1,0 +1,48 @@
+.blog-details {
+  margin: 24px auto;
+  max-width: 800px;
+}
+
+.blog-details h1 {
+  font-size: 28px;
+  font-weight: bold;
+  margin-bottom: 8px;
+}
+
+.blog-details p {
+  color: #6b7280;
+  font-size: 14px;
+  margin-bottom: 12px;
+}
+
+.blog-details img {
+  width: 100%;
+  height: 350px;
+  object-fit: cover;
+  margin: 16px 0;
+  border-radius: 10px;
+}
+
+.blog-details .actions {
+  margin-top: 20px;
+}
+
+.blog-details .actions button,
+.blog-details .actions a {
+  margin-right: 10px;
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-weight: 500;
+  border: none;
+  cursor: pointer;
+}
+
+.blog-details .edit-btn {
+  background: #f59e0b;
+  color: white;
+}
+
+.blog-details .delete-btn {
+  background: #dc2626;
+  color: white;
+}

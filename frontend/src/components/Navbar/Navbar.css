@@ -1,0 +1,50 @@
+.navbar {
+  background: #1f2937;
+  color: #fff;
+}
+
+.nav-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 0;
+}
+
+.brand {
+  font-weight: 700;
+  font-size: 20px;
+}
+
+.nav-right {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.nav-right a {
+  color: #fff;
+  font-weight: 500;
+  text-decoration: none;   /* remove underline by default */
+}
+
+.nav-right a:hover {
+  color: #d1d5db;          /* change text color on hover */
+  text-decoration: none;   /* prevent underline on hover */
+}
+
+.btn-primary, .btn-secondary, .logout-btn {
+  padding: 8px 14px;
+  border-radius: 8px;
+  text-decoration: none;
+}
+.nav-inner {
+  text-decoration: none;
+}
+
+.btn-primary { background: #2563eb; }
+.btn-secondary { background: #10b981; }
+.logout-btn { background: #ef4444; color: #fff; }
+
+.btn-primary:hover { background: #1e40af; }
+.btn-secondary:hover { background: #059669; }
+.logout-btn:hover { background: #dc2626; }
