@@ -9,18 +9,13 @@ import BlogForm from "./pages/BlogForm/BlogForm";
 import Admin from "./pages/Admin/Admin";
 import ProtectedRoute from "./components/ProtectedRouter/ProtectedRoute";
 import Footer from "./components/Footer/Footer";
-import Blogs from "./pages/Blogs/Blogs";
 
 export default function App() {
   return (
     <>
       <Navbar />
       <Routes>
-        <Route path="/" element={
-          <ProtectedRoute>
-                <Home /> <Blogs/>
-            </ProtectedRoute>
-          } />
+        <Route path="/" element={ <Home /> } />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
 

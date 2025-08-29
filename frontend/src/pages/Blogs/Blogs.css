@@ -1,9 +1,0 @@
-.blogs-container {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 2rem;
-  padding: 2rem;
-  background: #f5f7fa;
-  min-height: 100vh;
-  box-sizing: border-box;
-}

@@ -1,16 +1,155 @@
-.blog-details { max-width: 900px; margin: 22px auto; }
-.blog-details h1 { font-size: 28px; font-weight: 800; margin-bottom: 8px; }
-.blog-details .meta { color: #6b7280; font-size: 14px; margin-bottom: 12px; }
+/* ==========================
+   Blog Details Container
+========================== */
+.blog-details {
+  max-width: 900px;
+  margin: 40px auto;
+  padding: 0 20px;
+  box-sizing: border-box;
+  font-family: Arial, sans-serif;
+  color: #333;
+}
+
+/* Blog Title */
+.blog-details h1 {
+  font-size: 32px;
+  font-weight: 800;
+  margin-bottom: 12px;
+  line-height: 1.2;
+  text-align: center;
+  background: linear-gradient(90deg, #4f46e5, #9333ea);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Meta Info */
+.blog-details .meta {
+  color: #6b7280;
+  font-size: 14px;
+  margin-bottom: 16px;
+  text-align: center;
+}
+
+/* Blog Image */
 .blog-details img {
-  width: 100%; height: 360px; object-fit: cover;
-  border-radius: 10px; margin: 16px 0;
+  width: 100%;
+  height: 400px;
+  object-fit: cover;
+  border-radius: 12px;
+  margin: 20px 0;
+  transition: transform 0.4s ease, box-shadow 0.4s ease;
 }
-.blog-details .content { background: #fff; padding: 16px; border-radius: 10px; }
-.actions { margin-top: 18px; display: flex; gap: 10px; }
-.edit-btn, .delete-btn {
-  padding: 8px 14px; border-radius: 8px; font-weight: 600; border: none; text-decoration: none;
+
+.blog-details img:hover {
+  transform: scale(1.05);
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
 }
-.edit-btn { background: #f59e0b; color: #fff; }
-.delete-btn { background: #dc2626; color: #fff; }
-.edit-btn:hover { background: #d97706; }
-.delete-btn:hover { background: #b91c1c; }
+
+/* Content Section */
+.blog-details .content {
+  background: #ffffff;
+  padding: 24px;
+  border-radius: 12px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.05);
+  line-height: 1.7;
+  font-size: 16px;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.blog-details .content:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.1);
+}
+
+/* Actions: Edit/Delete */
+.actions {
+  margin-top: 24px;
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+/* Buttons */
+.edit-btn,
+.delete-btn {
+  padding: 10px 18px;
+  border-radius: 8px;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 14px;
+  text-decoration: none; /* remove underline for links */
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Edit Button */
+.edit-btn {
+  background: #f59e0b;
+  color: #fff;
+  box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
+}
+
+.edit-btn:hover {
+  background: #d97706;
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(217, 119, 6, 0.4);
+  text-decoration: none;
+}
+
+/* Delete Button */
+.delete-btn {
+  background: #dc2626;
+  color: #fff;
+  box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3);
+}
+
+.delete-btn:hover {
+  background: #b91c1c;
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(185, 28, 28, 0.4);
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+  .blog-details h1 {
+    font-size: 28px;
+  }
+
+  .blog-details img {
+    height: 300px;
+  }
+
+  .blog-details .content {
+    padding: 18px;
+    font-size: 15px;
+  }
+
+  .actions {
+    gap: 12px;
+  }
+
+  .edit-btn,
+  .delete-btn {
+    padding: 8px 14px;
+    font-size: 13px;
+  }
+}
+
+@media (max-width: 480px) {
+  .blog-details h1 {
+    font-size: 24px;
+  }
+
+  .blog-details img {
+    height: 250px;
+  }
+
+  .blog-details .content {
+    padding: 16px;
+    font-size: 14px;
+  }
+}

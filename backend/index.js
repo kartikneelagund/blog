@@ -28,7 +28,7 @@ mongoose.connect(process.env.MONGO_URI)
 
 
 
-const allowedOrigins = ["http://localhost:5173","https://blog-33js.vercel.app/"];
+const allowedOrigins = ["http://localhost:5173"," "];
 
 app.use(cors({
   origin: allowedOrigins,

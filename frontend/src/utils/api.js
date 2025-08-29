@@ -1,11 +1,11 @@
 import axios from "axios";
 
-// ✅ Base URL should point to API root, not a specific endpoint
+// Axios instance
 const api = axios.create({
   baseURL: import.meta.env.VITE_API_URL || "http://localhost:5000/api",
 });
 
-// Attach token automatically
+// Automatically attach token if present
 api.interceptors.request.use((config) => {
   const token = localStorage.getItem("token");
   if (token) {
@@ -15,32 +15,38 @@ api.interceptors.request.use((config) => {
 });
 
 // ==========================
+// Auth API
+// ==========================
+export const login = async (userData) => {
+  const res = await api.post("/auth/login", userData);
+  return res.data;
+};
+
+export const signup = async (userData) => {
+  const res = await api.post("/auth/register", userData);
+  return res.data;
+};
+
+export const getUserProfile = async () => {
+  const res = await api.get("/user/profile");
+  return res.data;
+};
+
+// ==========================
 // Blogs API
 // ==========================
 export const getAllBlogs = async () => {
-  const res = await api.get("/blogs");
+  const res = await api.get("/blogs"); // VITE_API_URL + /blogs
   return res.data;
 };
 
-export const likeBlog = async (blogId) => {
-  const res = await api.post(`/blogs/${blogId}/like`);
+export const createBlog = async (blogData) => {
+  const res = await api.post("/blogs", blogData);
   return res.data;
 };
 
-export const commentBlog = async (blogId, text) => {
-  const res = await api.post(`/blogs/${blogId}/comment`, { text });
-  return res.data;
-};
-
-// Delete a blog (author/admin only)
-export const deleteBlog = async (blogId) => {
-  const res = await api.delete(`/blogs/${blogId}`);
-  return res.data;
-};
-
-// Edit a blog (author/admin only)
-export const editBlog = async (blogId, data) => {
-  const res = await api.put(`/blogs/${blogId}`, data);
+export const deleteBlog = async (id) => {
+  const res = await api.delete(`/blogs/${id}`);
   return res.data;
 };
 
