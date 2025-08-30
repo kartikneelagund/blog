@@ -2,7 +2,7 @@ import axios from "axios";
 
 // Axios instance
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || "http://localhost:5000/api",
+  baseURL: import.meta.env.VITE_API_URL || "https://blog-33js.vercel.app/api",
 });
 
 // Automatically attach token if present
