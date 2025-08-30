@@ -1,18 +1,44 @@
 import axios from "axios";
 
-// Axios instance
+// ==========================
+// Axios Instance
+// ==========================
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || "https://blog-33js.vercel.app/api",
+  baseURL: import.meta.env.VITE_API_URL || "https://blog-delta-hazel-70.vercel.app/api", 
+  withCredentials: true, // if you are using cookies (optional)
 });
 
-// Automatically attach token if present
-api.interceptors.request.use((config) => {
-  const token = localStorage.getItem("token");
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
+// ==========================
+// Request Interceptor
+// Automatically attach token
+// ==========================
+api.interceptors.request.use(
+  (config) => {
+    const token = localStorage.getItem("token");
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+  },
+  (error) => Promise.reject(error)
+);
+
+// ==========================
+// Response Interceptor
+// Centralized error handling
+// ==========================
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    console.error("API Error:", error.response?.data || error.message);
+    // Optionally handle token expiry → logout user
+    if (error.response?.status === 401) {
+      localStorage.removeItem("token");
+      window.location.href = "/login"; // redirect to login
+    }
+    return Promise.reject(error);
   }
-  return config;
-});
+);
 
 // ==========================
 // Auth API
@@ -36,12 +62,22 @@ export const getUserProfile = async () => {
 // Blogs API
 // ==========================
 export const getAllBlogs = async () => {
-  const res = await api.get("/blogs"); // VITE_API_URL + /blogs
+  const res = await api.get("/blogs");
+  return res.data;
+};
+
+export const getBlogById = async (id) => {
+  const res = await api.get(`/blogs/${id}`);
   return res.data;
 };
 
 export const createBlog = async (blogData) => {
   const res = await api.post("/blogs", blogData);
+  return res.data;
+};
+
+export const updateBlog = async (id, blogData) => {
+  const res = await api.put(`/blogs/${id}`, blogData);
   return res.data;
 };
 
