@@ -9,7 +9,7 @@ console.log("API URL 👉", import.meta.env.VITE_API_URL);
 // ==========================
 const api = axios.create({
   baseURL: import.meta.env.VITE_API_URL || "https://blog-delta-hazel-70.vercel.app/api", 
-  withCredentials: true, // if you are using cookies (optional)
+
 });
 
 // ==========================
