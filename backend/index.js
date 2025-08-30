@@ -1,45 +1,56 @@
-import express from 'express';
-import mongoose from 'mongoose';
-import dotenv from 'dotenv';
-import cors from 'cors';
+import express from "express";
+import mongoose from "mongoose";
+import dotenv from "dotenv";
+import cors from "cors";
 
-import authRoutes from './routes/auth.js';
-import blogRoutes from './routes/blog.js';
-import userRoutes from './routes/user.js';
+import authRoutes from "./routes/auth.js";
+import blogRoutes from "./routes/blog.js";
+import userRoutes from "./routes/user.js";
 
-
-dotenv.config(); // 👈 must come before process.env usage
+dotenv.config(); // ✅ load .env first
 
 const app = express();
-app.use(cors());
+
+// ==================
+// Middleware
+// ==================
+const allowedOrigins = [
+  "http://localhost:5173",  // local frontend
+  "https://blog-33js.vercel.app" // deployed frontend (no trailing slash!)
+];
+
+app.use(
+  cors({
+    origin: allowedOrigins,
+    credentials: true,
+  })
+);
+
 app.use(express.json({ limit: "10mb" }));
 
-app.use('/api/auth', authRoutes);
-app.use('/api/blogs', blogRoutes);
-app.use('/api/users', userRoutes);
+// ==================
+// Routes
+// ==================
+app.use("/api/auth", authRoutes);
+app.use("/api/blogs", blogRoutes);
+app.use("/api/users", userRoutes);
 
-// Debug logs
+app.get("/", (req, res) => {
+  res.send("✅ Backend is running!");
+});
+
+// ==================
+// DB + Server Start
+// ==================
 console.log("MONGO_URI:", process.env.MONGO_URI ? "✅ Loaded" : "❌ Missing");
 console.log("JWT_SECRET:", process.env.JWT_SECRET ? "✅ Loaded" : "❌ Missing");
 
-mongoose.connect(process.env.MONGO_URI)
-  .then(() => app.listen(5000, () => console.log("Server connected on port 5000")))
-  .catch(err => console.log(err));
-
-
-
-const allowedOrigins = ["http://localhost:5173","https://blog-33js.vercel.app/"];
-
-app.use(cors({
-  origin: allowedOrigins,
-  credentials: true,
-}));
-
-// Routes
-app.use("/api/auth", authRoutes);       // auth routes
-app.use("/api/blogs", blogRoutes);     // ✅ add blog routes here
-  
-    //get route
-  app.get("/",(req,res)=>{
-    return res.send("backend is running")
+mongoose
+  .connect(process.env.MONGO_URI)
+  .then(() => {
+    const PORT = process.env.PORT || 5000;
+    app.listen(PORT, () =>
+      console.log(`🚀 Server running on port ${PORT}`)
+    );
   })
+  .catch((err) => console.error("❌ DB Connection Error:", err));
