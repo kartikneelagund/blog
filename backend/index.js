@@ -6,8 +6,12 @@ import cors from "cors";
 import authRoutes from "./routes/auth.js";
 import blogRoutes from "./routes/blog.js";
 import userRoutes from "./routes/user.js";
+import adminRoutes from "./routes/admin.js";
 
-dotenv.config(); // ✅ load .env first
+app.use("/api/admin", adminRoutes);
+
+
+dotenv.config(); // load .env first
 
 const app = express();
 
