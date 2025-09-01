@@ -1,14 +1,14 @@
 import axios from "axios";
 
 
-// Debug your API URL
-console.log("API URL", import.meta.env.VITE_API_URL);
+// ✅ Debug your API URL
+console.log("API URL 👉", import.meta.env.VITE_API_URL);
 
 // ==========================
 // Axios Instance
 // ==========================
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || "https://blog-delta-hazel-70.vercel.app/api", 
+  baseURL: import.meta.env.VITE_API_URL || "https://blog-new-bakend.vercel.app/api", 
 
 });
 

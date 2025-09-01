@@ -6,12 +6,8 @@ import cors from "cors";
 import authRoutes from "./routes/auth.js";
 import blogRoutes from "./routes/blog.js";
 import userRoutes from "./routes/user.js";
-import adminRoutes from "./routes/admin.js";
 
-app.use("/api/admin", adminRoutes);
-
-
-dotenv.config(); // load .env first
+dotenv.config(); // ✅ load .env first
 
 const app = express();
 
@@ -20,7 +16,7 @@ const app = express();
 // ==================
 const allowedOrigins = [
   "http://localhost:5173",  // local frontend
-  "https://blog-33js.vercel.app" // deployed frontend (no trailing slash!)
+  "https://blog-new-frontend-five.vercel.app" // deployed frontend (no trailing slash!)
 ];
 
 app.use(
