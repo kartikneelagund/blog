@@ -1,17 +1,20 @@
 // src/components/BlogCard/BlogCard.jsx
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import "./BlogCard.css";
 
 export default function BlogCard({ blog }) {
   const [likes, setLikes] = useState(blog.likes?.length || 0);
   const [comments, setComments] = useState(blog.comments?.length || 0);
-  const [views, setViews] = useState(blog.views || 0); // ✅ fix
+  const [views, setViews] = useState(blog.views || 0);
   const [likedByUser, setLikedByUser] = useState(false);
 
   const token = localStorage.getItem("token");
-  const userId = localStorage.getItem("userId"); // store this at login
+  const userId = localStorage.getItem("userId");
+  const navigate = useNavigate();
+
+  const isLoggedIn = !!token;
 
   // Check if current user liked the blog
   useEffect(() => {
@@ -24,13 +27,14 @@ export default function BlogCard({ blog }) {
   useEffect(() => {
     setLikes(blog.likes?.length || 0);
     setComments(blog.comments?.length || 0);
-    setViews(blog.views || 0); // ✅ fix
+    setViews(blog.views || 0);
   }, [blog]);
 
   // Handle Like/Unlike
   const handleLike = async () => {
-    if (!token) {
+    if (!isLoggedIn) {
       alert("You must be logged in to like a blog.");
+      navigate("/login");
       return;
     }
 
@@ -50,8 +54,9 @@ export default function BlogCard({ blog }) {
 
   // Handle adding comment
   const handleComment = async () => {
-    if (!token) {
+    if (!isLoggedIn) {
       alert("You must be logged in to comment.");
+      navigate("/login");
       return;
     }
 
@@ -92,11 +97,25 @@ export default function BlogCard({ blog }) {
       <div className="blog-footer">
         <button
           onClick={handleLike}
-          style={{ color: likedByUser ? "red" : "black" }}
+          disabled={!isLoggedIn}
+          style={{
+            color: likedByUser ? "red" : "black",
+            cursor: isLoggedIn ? "pointer" : "not-allowed",
+          }}
+          title={isLoggedIn ? "" : "Login to like this blog"}
         >
           ❤️ {likes}
         </button>
-        <button onClick={handleComment}>💬 {comments}</button>
+
+        <button
+          onClick={handleComment}
+          disabled={!isLoggedIn}
+          style={{ cursor: isLoggedIn ? "pointer" : "not-allowed" }}
+          title={isLoggedIn ? "" : "Login to comment"}
+        >
+          💬 {comments}
+        </button>
+
         <span>👀 {views}</span>
       </div>
 
