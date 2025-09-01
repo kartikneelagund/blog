@@ -1,43 +1,15 @@
-// backend/models/Blog.js
 import mongoose from "mongoose";
 
 const blogSchema = new mongoose.Schema(
   {
-    title: {
-      type: String,
-      required: true,
-      trim: true,
-    },
-    content: {
-      type: String,
-      default: "",
-    },
-    image: {
-      type: String,
-      default: "", // optional
-    },
-    category: {
-      type: String,
-      default: "General",
-      trim: true,
-    },
-    tags: {
-      type: [String],
-      default: [],
-    },
-    author: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
-      required: true, // keep author if you want admin features
-    },
+    title: { type: String, required: true, trim: true },
+    content: { type: String, default: "" },
+    image: { type: String, default: "" },
+    category: { type: String, default: "General", trim: true },
+    tags: { type: [String], default: [] },
+    author: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
 
-    // ✅ Likes without login: store IP addresses or any string
-    likes: {
-      type: [String], 
-      default: [],
-    },
-
-    // ✅ Comments without login
+    likes: { type: [String], default: [] }, // store anonymous IDs or IPs
     comments: [
       {
         name: { type: String, default: "Anonymous" },
@@ -45,10 +17,9 @@ const blogSchema = new mongoose.Schema(
         createdAt: { type: Date, default: Date.now },
       },
     ],
+    views: { type: Number, default: 0 }, // total views
   },
-  {
-    timestamps: true, // automatically adds createdAt and updatedAt
-  }
+  { timestamps: true }
 );
 
 export default mongoose.model("Blog", blogSchema);
