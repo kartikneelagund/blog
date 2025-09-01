@@ -15,6 +15,24 @@ export default function Admin() {
   const [editingUser, setEditingUser] = useState(null);
   const [formData, setFormData] = useState({ username: "", email: "" });
 
+  
+  // ✅ Fetch stats on mount if user is admin
+  useEffect(() => {
+    if (!user?.isAdmin) return;
+
+    api.get("/admin/stats")
+      .then((res) => setStats(res.data))
+      .catch((err) => console.error(err));
+  }, [user?.isAdmin]);
+
+  if (!user?.isAdmin) {
+    return (
+      <div className="admin container">
+        <h3>Access Denied</h3>
+      </div>
+    );
+  }
+
   // Fetch users + stats
   useEffect(() => {
     if (!user?.isAdmin) return;
@@ -77,8 +95,6 @@ export default function Admin() {
   return (
     <div className="admin container">
       <h2>Admin Panel</h2>
-
-      {/* 🔹 Stats Section */}
       <div className="stats-grid">
         <div className="stat-card">
           <h4>Total Users</h4>
