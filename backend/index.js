@@ -3,13 +3,13 @@ import mongoose from "mongoose";
 import dotenv from "dotenv";
 import cors from "cors";
 
+// ==================
+// Route Imports
+// ==================
 import authRoutes from "./routes/auth.js";
 import blogRoutes from "./routes/blog.js";
 import userRoutes from "./routes/user.js";
-import adminRoutes from "./routes/adminRoutes.js";
-
-app.use("/admin", adminRoutes);
-
+import adminRoutes from "./routes/adminRoutes.js"; // ✅ NEW
 
 dotenv.config(); // ✅ load .env first
 
@@ -20,7 +20,7 @@ const app = express();
 // ==================
 const allowedOrigins = [
   "http://localhost:5173",  // local frontend
-  "https://blog-33js.vercel.app" // deployed frontend (no trailing slash!)
+  "https://blog-33js.vercel.app" // deployed frontend
 ];
 
 app.use(
@@ -38,6 +38,7 @@ app.use(express.json({ limit: "10mb" }));
 app.use("/api/auth", authRoutes);
 app.use("/api/blogs", blogRoutes);
 app.use("/api/users", userRoutes);
+app.use("/api/admin", adminRoutes); // ✅ mounted under /api/admin
 
 app.get("/", (req, res) => {
   res.send("✅ Backend is running!");
