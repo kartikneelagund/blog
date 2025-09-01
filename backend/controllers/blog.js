@@ -6,16 +6,26 @@ export const createBlog = async (req, res) => {
   try {
     let image = "";
 
+    // If uploaded via multer
     if (req.file) {
       const uploaded = await cloudinary.uploader.upload(req.file.path);
       image = uploaded.secure_url;
-    } else if (req.body.image) {
+    }
+    // If raw image string passed (base64 or file path)
+    else if (req.body.image && !req.body.image.startsWith("http")) {
       const uploaded = await cloudinary.uploader.upload(req.body.image);
       image = uploaded.secure_url;
     }
+    // If frontend already sent a Cloudinary URL
+    else if (req.body.image && req.body.image.startsWith("http")) {
+      image = req.body.image;
+    }
 
     const blog = new Blog({
-      ...req.body,
+      title: req.body.title,
+      content: req.body.content,
+      category: req.body.category,
+      tags: req.body.tags || [],
       image,
       author: req.user._id, // from JWT middleware
     });
@@ -59,18 +69,28 @@ export const updateBlog = async (req, res) => {
     }
 
     let image = blog.image;
+
+    // If new file uploaded
     if (req.file) {
       const uploaded = await cloudinary.uploader.upload(req.file.path);
       image = uploaded.secure_url;
-    } else if (req.body.image && req.body.image !== blog.image && !req.body.image.startsWith("http")) {
+    }
+    // If base64 string provided
+    else if (req.body.image && !req.body.image.startsWith("http")) {
       const uploaded = await cloudinary.uploader.upload(req.body.image);
       image = uploaded.secure_url;
     }
+    // If Cloudinary URL provided (replace existing)
+    else if (req.body.image && req.body.image.startsWith("http")) {
+      image = req.body.image;
+    }
+    // If no image field sent, keep old image
 
     const updateFields = {
-      title: req.body.title || blog.title,
-      content: req.body.content || blog.content,
-      category: req.body.category || blog.category,
+      title: req.body.title ?? blog.title,
+      content: req.body.content ?? blog.content,
+      category: req.body.category ?? blog.category,
+      tags: req.body.tags ?? blog.tags,
       image,
     };
 
@@ -110,7 +130,7 @@ export const likeBlog = async (req, res) => {
     if (!blog) return res.status(404).json({ message: "Blog not found" });
 
     if (blog.likes.includes(req.user._id)) {
-      blog.likes = blog.likes.filter(id => id.toString() !== req.user._id);
+      blog.likes = blog.likes.filter((id) => id.toString() !== req.user._id);
     } else {
       blog.likes.push(req.user._id);
     }
