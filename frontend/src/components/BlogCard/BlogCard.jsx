@@ -1,6 +1,6 @@
 // src/components/BlogCard/BlogCard.jsx
 import { useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import axios from "axios";
 import "./BlogCard.css";
 
@@ -10,13 +10,9 @@ export default function BlogCard({ blog }) {
   const [views, setViews] = useState(blog.views || 0);
   const [likedByUser, setLikedByUser] = useState(false);
 
-  const token = localStorage.getItem("token");
-  const userId = localStorage.getItem("userId");
-  const navigate = useNavigate();
+  const userId = localStorage.getItem("userId"); // optional, only for tracking if user is logged in
 
-  const isLoggedIn = !!token;
-
-  // Check if current user liked the blog
+  // Check if current user liked the blog (if logged in)
   useEffect(() => {
     if (blog.likes && userId) {
       setLikedByUser(blog.likes.includes(userId));
@@ -30,44 +26,28 @@ export default function BlogCard({ blog }) {
     setViews(blog.views || 0);
   }, [blog]);
 
-  // Handle Like/Unlike
+  // Handle Like/Unlike (anyone can like)
   const handleLike = async () => {
-    if (!isLoggedIn) {
-      alert("You must be logged in to like a blog.");
-      navigate("/login");
-      return;
-    }
-
     try {
       const res = await axios.put(
-        `${import.meta.env.VITE_API_URL}/blogs/${blog._id}/like`,
-        {},
-        { headers: { Authorization: `Bearer ${token}` } }
+        `${import.meta.env.VITE_API_URL}/blogs/${blog._id}/like`
       );
 
       setLikes(res.data.likes?.length || 0);
-      setLikedByUser(res.data.likes?.includes(userId));
     } catch (err) {
       console.error("Like error:", err.response?.data || err.message);
     }
   };
 
-  // Handle adding comment
+  // Handle adding comment (anyone can comment)
   const handleComment = async () => {
-    if (!isLoggedIn) {
-      alert("You must be logged in to comment.");
-      navigate("/login");
-      return;
-    }
-
     const text = prompt("Enter your comment:");
     if (!text) return;
 
     try {
       const res = await axios.post(
         `${import.meta.env.VITE_API_URL}/blogs/${blog._id}/comment`,
-        { text },
-        { headers: { Authorization: `Bearer ${token}` } }
+        { text }
       );
 
       setComments(res.data.comments?.length || 0);
@@ -97,22 +77,12 @@ export default function BlogCard({ blog }) {
       <div className="blog-footer">
         <button
           onClick={handleLike}
-          disabled={!isLoggedIn}
-          style={{
-            color: likedByUser ? "red" : "black",
-            cursor: isLoggedIn ? "pointer" : "not-allowed",
-          }}
-          title={isLoggedIn ? "" : "Login to like this blog"}
+          style={{ color: likedByUser ? "red" : "black", cursor: "pointer" }}
         >
           ❤️ {likes}
         </button>
 
-        <button
-          onClick={handleComment}
-          disabled={!isLoggedIn}
-          style={{ cursor: isLoggedIn ? "pointer" : "not-allowed" }}
-          title={isLoggedIn ? "" : "Login to comment"}
-        >
+        <button onClick={handleComment} style={{ cursor: "pointer" }}>
           💬 {comments}
         </button>
 
