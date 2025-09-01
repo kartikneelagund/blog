@@ -7,7 +7,7 @@ import "./BlogCard.css";
 export default function BlogCard({ blog }) {
   const [likes, setLikes] = useState(blog.likes?.length || 0);
   const [comments, setComments] = useState(blog.comments?.length || 0);
-  const [views, setViews] = useState(blog.views?.length || 0);
+  const [views, setViews] = useState(blog.views || 0); // ✅ fix
   const [likedByUser, setLikedByUser] = useState(false);
 
   const token = localStorage.getItem("token");
@@ -24,7 +24,7 @@ export default function BlogCard({ blog }) {
   useEffect(() => {
     setLikes(blog.likes?.length || 0);
     setComments(blog.comments?.length || 0);
-    setViews(blog.views?.length || 0);
+    setViews(blog.views || 0); // ✅ fix
   }, [blog]);
 
   // Handle Like/Unlike
