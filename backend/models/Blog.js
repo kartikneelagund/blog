@@ -1,51 +1,19 @@
-import mongoose from "mongoose";
-
-const blogSchema = new mongoose.Schema(
-  {
-    title: {
-      type: String,
-      required: true,
-      trim: true,
+const blogSchema = new mongoose.Schema({
+  title: String,
+  content: String,
+  category: String,
+  tags: [String],
+  image: String,
+  author: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+  views: { type: Number, default: 0 },
+  likes: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
+  likesCount: { type: Number, default: 0 }, // ✅ for anonymous likes
+  comments: [
+    {
+      user: { type: mongoose.Schema.Types.ObjectId, ref: "User", default: null },
+      username: { type: String, default: "Anonymous" },
+      text: String,
+      createdAt: { type: Date, default: Date.now },
     },
-    content: {
-      type: String,
-      default: "",
-    },
-    image: {
-      type: String,
-      default: "", // optional, can be empty if no image
-    },
-    category: {
-      type: String,
-      default: "General",
-      trim: true,
-    },
-    tags: {
-      type: [String],
-      default: [],
-    },
-    author: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
-      required: true,
-    },
-    likes: [
-      {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "User",
-      },
-    ],
-    comments: [
-      {
-        user: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
-        text: { type: String, required: true },
-        createdAt: { type: Date, default: Date.now },
-      },
-    ],
-  },
-  {
-    timestamps: true, // automatically adds createdAt and updatedAt
-  }
-);
-
-export default mongoose.model("Blog", blogSchema);
+  ],
+}, { timestamps: true });

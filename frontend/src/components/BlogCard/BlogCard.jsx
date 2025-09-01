@@ -1,48 +1,56 @@
-// src/components/BlogCard/BlogCard.jsx
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import axios from "axios";
 import "./BlogCard.css";
 
 export default function BlogCard({ blog }) {
-  const [likes, setLikes] = useState(blog.likes?.length || 0);
+  const [likes, setLikes] = useState(
+    (blog.likes?.length || 0) + (blog.likesCount || 0)
+  );
   const [comments, setComments] = useState(blog.comments?.length || 0);
   const [views, setViews] = useState(blog.views || 0);
+  const [likedByUser, setLikedByUser] = useState(false); // ✅ added state
 
   // Update counts when blog changes
   useEffect(() => {
-    setLikes(blog.likes?.length || 0);
+    setLikes((blog.likes?.length || 0) + (blog.likesCount || 0));
     setComments(blog.comments?.length || 0);
     setViews(blog.views || 0);
   }, [blog]);
 
   // Handle Like (anyone)
- const handleLike = async () => {
-  try {
-    const res = await axios.put(
-      `${import.meta.env.VITE_API_URL}/blogs/${blog._id}/like`
-    );
-    setLikes(res.data.likesCount || 0); // use likesCount
-  } catch (err) {
-    console.error(err);
-  }
-};
+  const handleLike = async () => {
+    try {
+      const res = await axios.put(
+        `${import.meta.env.VITE_API_URL}/blogs/${blog._id}/like`
+      );
+
+      // Backend should return updated blog
+      const updatedLikes =
+        (res.data.likes?.length || 0) + (res.data.likesCount || 0);
+
+      setLikes(updatedLikes);
+      setLikedByUser(!likedByUser); // toggle
+    } catch (err) {
+      console.error(err);
+    }
+  };
 
   // Handle Comment (anyone)
- const handleComment = async () => {
-  const text = prompt("Enter your comment:");
-  if (!text) return;
+  const handleComment = async () => {
+    const text = prompt("Enter your comment:");
+    if (!text) return;
 
-  try {
-    const res = await axios.post(
-      `${import.meta.env.VITE_API_URL}/blogs/${blog._id}/comment`,
-      { text }
-    );
-    setComments(res.data.comments?.length || 0);
-  } catch (err) {
-    console.error(err);
-  }
-};
+    try {
+      const res = await axios.post(
+        `${import.meta.env.VITE_API_URL}/blogs/${blog._id}/comment`,
+        { text }
+      );
+      setComments(res.data.comments?.length || 0);
+    } catch (err) {
+      console.error(err);
+    }
+  };
 
   return (
     <div className="blog-card">
@@ -63,7 +71,9 @@ export default function BlogCard({ blog }) {
       />
 
       <div className="blog-footer">
-        <button onClick={handleLike}>❤️ {likes}</button>
+        <button onClick={handleLike} style={{ color: likedByUser ? "red" : "black" }}>
+          ❤️ {likes}
+        </button>
         <button onClick={handleComment}>💬 {comments}</button>
         <span>👀 {views}</span>
       </div>
