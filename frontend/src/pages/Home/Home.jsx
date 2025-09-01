@@ -8,7 +8,7 @@ export default function Home() {
   const [category, setCategory] = useState("All");
 
   useEffect(() => {
-    fetch("https://blog-new-bakend.vercel.app/api/blogs") // backend API
+    fetch("https://blog-delta-hazel-70.vercel.app/api/blogs") // backend API
       .then((res) => res.json())
       .then((data) => setBlogs(data))
       .catch((err) => console.error(err));
