@@ -8,7 +8,7 @@ const blogSchema = new mongoose.Schema(
     category: { type: String, default: "General", trim: true },
     tags: { type: [String], default: [] },
     author: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
-
+    views: { type: Number, default: 0 },   // 👈 for tracking views
     likes: { type: [String], default: [] }, // store anonymous IDs or IPs
     comments: [
       {
