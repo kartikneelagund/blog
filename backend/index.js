@@ -15,13 +15,19 @@ const app = express();
 // Middleware
 // ==================
 const allowedOrigins = [
-  "http://localhost:5173",  // local frontend
-  "https://blog-33js.vercel.app" // deployed frontend (no trailing slash!)
+  "http://localhost:5173",   // local frontend
+  "https://blog-33js.vercel.app" // deployed frontend
 ];
 
 app.use(
   cors({
-    origin: allowedOrigins,
+    origin: (origin, callback) => {
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
     credentials: true,
   })
 );
