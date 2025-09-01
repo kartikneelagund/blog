@@ -1,3 +1,4 @@
+// backend/models/Blog.js
 import mongoose from "mongoose";
 
 const blogSchema = new mongoose.Schema(
@@ -13,7 +14,7 @@ const blogSchema = new mongoose.Schema(
     },
     image: {
       type: String,
-      default: "", // optional, can be empty if no image
+      default: "", // optional
     },
     category: {
       type: String,
@@ -27,17 +28,19 @@ const blogSchema = new mongoose.Schema(
     author: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
-      required: true,
+      required: true, // keep author if you want admin features
     },
-    likes: [
-      {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "User",
-      },
-    ],
+
+    // ✅ Likes without login: store IP addresses or any string
+    likes: {
+      type: [String], 
+      default: [],
+    },
+
+    // ✅ Comments without login
     comments: [
       {
-        user: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
+        name: { type: String, default: "Anonymous" },
         text: { type: String, required: true },
         createdAt: { type: Date, default: Date.now },
       },
