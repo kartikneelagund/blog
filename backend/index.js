@@ -7,8 +7,6 @@ import authRoutes from "./routes/auth.js";
 import blogRoutes from "./routes/blog.js";
 import userRoutes from "./routes/user.js";
 
-
-
 dotenv.config(); // ✅ load .env first
 
 const app = express();

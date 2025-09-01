@@ -13,7 +13,7 @@ const blogSchema = new mongoose.Schema(
     },
     image: {
       type: String,
-      default: "", // optional
+      default: "", // optional, can be empty if no image
     },
     category: {
       type: String,
@@ -29,42 +29,22 @@ const blogSchema = new mongoose.Schema(
       ref: "User",
       required: true,
     },
-
-    // 👇 New field for tracking views
-    views: {
-      type: Number,
-      default: 0,
-    },
-
-    // Likes as an array of user references
     likes: [
       {
         type: mongoose.Schema.Types.ObjectId,
         ref: "User",
       },
     ],
-
-    // Comments embedded
     comments: [
       {
-        user: {
-          type: mongoose.Schema.Types.ObjectId,
-          ref: "User",
-          required: true,
-        },
-        text: {
-          type: String,
-          required: true,
-        },
-        createdAt: {
-          type: Date,
-          default: Date.now,
-        },
+        user: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
+        text: { type: String, required: true },
+        createdAt: { type: Date, default: Date.now },
       },
     ],
   },
   {
-    timestamps: true, // createdAt + updatedAt
+    timestamps: true, // automatically adds createdAt and updatedAt
   }
 );
 

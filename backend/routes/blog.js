@@ -6,22 +6,18 @@ import {
   updateBlog,
   deleteBlog,
   likeBlog,
-  commentBlog,
-  incrementViews,
-} from "../controllers/blogController.js";
+  commentBlog
+} from "../controllers/blog.js";
+import { verifyToken } from "../middleware/auth.js";
 
 const router = express.Router();
 
-// CRUD
 router.get("/", getAllBlogs);
 router.get("/:id", getBlogById);
-router.post("/", createBlog);
-router.put("/:id", updateBlog);
-router.delete("/:id", deleteBlog);
-
-// Interactions (no auth needed)
-router.put("/:id/like", likeBlog);
-router.post("/:id/comment", commentBlog);
-router.put("/:id/views", incrementViews);
+router.post("/", verifyToken, createBlog);
+router.put("/:id", verifyToken, updateBlog); // update by author only
+router.delete("/:id", verifyToken, deleteBlog); // delete by author or admin
+router.put("/:id/like", verifyToken, likeBlog);
+router.post("/:id/comment", verifyToken, commentBlog);
 
 export default router;
