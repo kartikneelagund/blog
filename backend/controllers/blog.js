@@ -129,15 +129,18 @@ export const likeBlog = async (req, res) => {
     const blog = await Blog.findById(req.params.id);
     if (!blog) return res.status(404).json({ message: "Blog not found" });
 
-    // Increment likes count (anyone)
-    blog.likesCount = (blog.likesCount || 0) + 1;
+    if (blog.likes.includes(req.user._id)) {
+      blog.likes = blog.likes.filter((id) => id.toString() !== req.user._id);
+    } else {
+      blog.likes.push(req.user._id);
+    }
+
     await blog.save();
     res.json(blog);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 };
-
 
 // ✅ Comment on Blog
 export const commentBlog = async (req, res) => {
@@ -145,11 +148,15 @@ export const commentBlog = async (req, res) => {
     const blog = await Blog.findById(req.params.id);
     if (!blog) return res.status(404).json({ message: "Blog not found" });
 
-    blog.comments.push({ text: req.body.text });
+    blog.comments.push({
+      user: req.user._id,
+      text: req.body.text,
+      createdAt: new Date(),
+    });
+
     await blog.save();
     res.json(blog);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 };
-
