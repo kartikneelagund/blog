@@ -17,32 +17,32 @@ export default function BlogCard({ blog }) {
   }, [blog]);
 
   // Handle Like (anyone)
-  const handleLike = async () => {
-    try {
-      const res = await axios.put(
-        `${import.meta.env.VITE_API_URL}/blogs/${blog._id}/like`
-      );
-      setLikes(res.data.likes?.length || 0);
-    } catch (err) {
-      console.error("Like error:", err.response?.data || err.message);
-    }
-  };
+ const handleLike = async () => {
+  try {
+    const res = await axios.put(
+      `${import.meta.env.VITE_API_URL}/blogs/${blog._id}/like`
+    );
+    setLikes(res.data.likesCount || 0); // use likesCount
+  } catch (err) {
+    console.error(err);
+  }
+};
 
   // Handle Comment (anyone)
-  const handleComment = async () => {
-    const text = prompt("Enter your comment:");
-    if (!text) return;
+ const handleComment = async () => {
+  const text = prompt("Enter your comment:");
+  if (!text) return;
 
-    try {
-      const res = await axios.post(
-        `${import.meta.env.VITE_API_URL}/blogs/${blog._id}/comment`,
-        { text }
-      );
-      setComments(res.data.comments?.length || 0);
-    } catch (err) {
-      console.error("Comment error:", err.response?.data || err.message);
-    }
-  };
+  try {
+    const res = await axios.post(
+      `${import.meta.env.VITE_API_URL}/blogs/${blog._id}/comment`,
+      { text }
+    );
+    setComments(res.data.comments?.length || 0);
+  } catch (err) {
+    console.error(err);
+  }
+};
 
   return (
     <div className="blog-card">
