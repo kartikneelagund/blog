@@ -1,4 +1,3 @@
-// src/components/BlogCard/BlogCard.jsx
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import axios from "axios";
@@ -8,38 +7,36 @@ export default function BlogCard({ blog }) {
   const [likes, setLikes] = useState(blog.likes?.length || 0);
   const [comments, setComments] = useState(blog.comments?.length || 0);
   const [views, setViews] = useState(blog.views || 0);
-  const [likedByUser, setLikedByUser] = useState(false);
 
-  const userId = localStorage.getItem("userId"); // optional, only for tracking if user is logged in
-
-  // Check if current user liked the blog (if logged in)
+  // Increment views on load
   useEffect(() => {
-    if (blog.likes && userId) {
-      setLikedByUser(blog.likes.includes(userId));
-    }
-  }, [blog.likes, userId]);
+    const incrementViews = async () => {
+      try {
+        const res = await axios.put(
+          `${import.meta.env.VITE_API_URL}/blogs/${blog._id}/views`
+        );
+        setViews(res.data.views || 0);
+      } catch (err) {
+        console.error("View error:", err);
+      }
+    };
+    incrementViews();
+  }, [blog._id]);
 
-  // Update counts when blog changes
-  useEffect(() => {
-    setLikes(blog.likes?.length || 0);
-    setComments(blog.comments?.length || 0);
-    setViews(blog.views || 0);
-  }, [blog]);
-
-  // Handle Like/Unlike (anyone can like)
+  // Handle Like (anyone can like)
   const handleLike = async () => {
     try {
       const res = await axios.put(
-        `${import.meta.env.VITE_API_URL}/blogs/${blog._id}/like`
+        `${import.meta.env.VITE_API_URL}/blogs/${blog._id}/like`,
+        { userId: "anonymous" } // track as anonymous
       );
-
       setLikes(res.data.likes?.length || 0);
     } catch (err) {
-      console.error("Like error:", err.response?.data || err.message);
+      console.error("Like error:", err);
     }
   };
 
-  // Handle adding comment (anyone can comment)
+  // Handle Comment (anyone can comment)
   const handleComment = async () => {
     const text = prompt("Enter your comment:");
     if (!text) return;
@@ -47,12 +44,11 @@ export default function BlogCard({ blog }) {
     try {
       const res = await axios.post(
         `${import.meta.env.VITE_API_URL}/blogs/${blog._id}/comment`,
-        { text }
+        { text, userId: "Anonymous" }
       );
-
       setComments(res.data.comments?.length || 0);
     } catch (err) {
-      console.error("Comment error:", err.response?.data || err.message);
+      console.error("Comment error:", err);
     }
   };
 
@@ -75,17 +71,12 @@ export default function BlogCard({ blog }) {
       />
 
       <div className="blog-footer">
-        <button
-          onClick={handleLike}
-          style={{ color: likedByUser ? "red" : "black", cursor: "pointer" }}
-        >
+        <button onClick={handleLike} style={{ cursor: "pointer" }}>
           ❤️ {likes}
         </button>
-
         <button onClick={handleComment} style={{ cursor: "pointer" }}>
           💬 {comments}
         </button>
-
         <span>👀 {views}</span>
       </div>
 
