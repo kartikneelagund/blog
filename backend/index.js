@@ -6,10 +6,6 @@ import cors from "cors";
 import authRoutes from "./routes/auth.js";
 import blogRoutes from "./routes/blog.js";
 import userRoutes from "./routes/user.js";
-import adminRoutes from "./routes/adminRoutes.js";
-
-app.use("/admin", adminRoutes);
-
 
 dotenv.config(); // ✅ load .env first
 
