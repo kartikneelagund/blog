@@ -15,19 +15,11 @@ export default function Admin() {
   const [editingUser, setEditingUser] = useState(null);
   const [formData, setFormData] = useState({ username: "", email: "" });
 
-  // Fetch users + stats
+    // ✅ Fetch stats on mount if user is admin
   useEffect(() => {
     if (!user?.isAdmin) return;
 
-    // Fetch all users
-    api
-      .get("/users/all")
-      .then((res) => setUsers(res.data || []))
-      .catch((err) => console.error(err));
-
-    // Fetch stats
-    api
-      .get("/admin/stats")
+    api.get("/admin/stats")
       .then((res) => setStats(res.data))
       .catch((err) => console.error(err));
   }, [user?.isAdmin]);
@@ -77,8 +69,6 @@ export default function Admin() {
   return (
     <div className="admin container">
       <h2>Admin Panel</h2>
-
-      {/* 🔹 Stats Section */}
       <div className="stats-grid">
         <div className="stat-card">
           <h4>Total Users</h4>
