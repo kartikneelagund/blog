@@ -17,7 +17,7 @@ router.get("/:id", getBlogById);
 router.post("/", verifyToken, createBlog);
 router.put("/:id", verifyToken, updateBlog); // update by author only
 router.delete("/:id", verifyToken, deleteBlog); // delete by author or admin
-router.put("/:id/like", verifyToken, likeBlog);
-router.post("/:id/comment", verifyToken, commentBlog);
+router.put("/:id/like", likeBlog);
+router.post("/:id/comment", commentBlog);
 
 export default router;

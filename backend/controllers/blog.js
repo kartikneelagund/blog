@@ -123,22 +123,33 @@ export const deleteBlog = async (req, res) => {
   }
 };
 
-// ✅ Like / Unlike Blog
+// ✅ Like / Unlike a blog (no login needed)
 export const likeBlog = async (req, res) => {
   try {
     const blog = await Blog.findById(req.params.id);
     if (!blog) return res.status(404).json({ message: "Blog not found" });
 
-    if (blog.likes.includes(req.user._id)) {
-      blog.likes = blog.likes.filter((id) => id.toString() !== req.user._id);
+    // Use IP address so one visitor can only like/unlike once
+    const ip = req.ip;
+
+    if (blog.likes.includes(ip)) {
+      // Unlike
+      blog.likes = blog.likes.filter((addr) => addr !== ip);
     } else {
-      blog.likes.push(req.user._id);
+      // Like
+      blog.likes.push(ip);
     }
 
     await blog.save();
-    res.json(blog);
+
+    // Send updated total counts back
+    res.json({
+      likes: blog.likes.length,
+      comments: blog.comments.length,
+      views: blog.views || 0,
+    });
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    res.status(500).json({ message: err.message });
   }
 };
 
