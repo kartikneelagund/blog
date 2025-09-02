@@ -6,7 +6,7 @@ import cors from "cors";
 import authRoutes from "./routes/auth.js";
 import blogRoutes from "./routes/blog.js";
 import userRoutes from "./routes/user.js";
-
+import adminRoutes from "./routes/adminRoutes.js"; //  NEW
 
 dotenv.config(); //load .env first
 
@@ -57,3 +57,5 @@ mongoose
     );
   })
   .catch((err) => console.error(" DB Connection Error:", err));
+
+  export default app;
