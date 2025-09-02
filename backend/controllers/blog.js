@@ -123,26 +123,22 @@ export const deleteBlog = async (req, res) => {
   }
 };
 
-// ✅ Like / Unlike a blog (no login needed)
+// ✅ Like blog without login
 export const likeBlog = async (req, res) => {
   try {
     const blog = await Blog.findById(req.params.id);
     if (!blog) return res.status(404).json({ message: "Blog not found" });
 
-    // Use IP address so one visitor can only like/unlike once
-    const ip = req.ip;
+    const ip = req.ip; // use IP instead of user ID
 
     if (blog.likes.includes(ip)) {
-      // Unlike
-      blog.likes = blog.likes.filter((addr) => addr !== ip);
+      blog.likes = blog.likes.filter((addr) => addr !== ip); // unlike
     } else {
-      // Like
-      blog.likes.push(ip);
+      blog.likes.push(ip); // like
     }
 
     await blog.save();
 
-    // Send updated total counts back
     res.json({
       likes: blog.likes.length,
       comments: blog.comments.length,
@@ -153,21 +149,28 @@ export const likeBlog = async (req, res) => {
   }
 };
 
-// ✅ Comment on Blog
-export const commentBlog = async (req, res) => {
+// ✅ Comment without login
+export const addComment = async (req, res) => {
   try {
     const blog = await Blog.findById(req.params.id);
     if (!blog) return res.status(404).json({ message: "Blog not found" });
 
-    blog.comments.push({
-      user: req.user._id,
+    const comment = {
       text: req.body.text,
-      createdAt: new Date(),
-    });
+      author: "Anonymous", // since no login
+      date: new Date(),
+    };
 
+    blog.comments.push(comment);
     await blog.save();
-    res.json(blog);
+
+    res.json({
+      comments: blog.comments,
+      totalComments: blog.comments.length,
+      likes: blog.likes.length,
+      views: blog.views || 0,
+    });
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    res.status(500).json({ message: err.message });
   }
 };
