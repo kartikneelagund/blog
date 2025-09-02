@@ -4,8 +4,7 @@ router.put("/:id/like", async (req, res) => {
     const blog = await Blog.findById(req.params.id);
     if (!blog) return res.status(404).json({ message: "Blog not found" });
 
-    // Example: use IP as identifier
-    const ip = req.headers["x-forwarded-for"] || req.connection.remoteAddress;
+    const ip = req.headers["x-forwarded-for"]?.split(",")[0] || req.ip;
 
     if (blog.likes.includes(ip)) {
       blog.likes = blog.likes.filter((l) => l !== ip);
@@ -14,7 +13,7 @@ router.put("/:id/like", async (req, res) => {
     }
 
     await blog.save();
-    res.json({ likes: blog.likes });
+    res.json({ totalLikes: blog.likes.length }); // 👈 return count
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
@@ -27,12 +26,12 @@ router.post("/:id/comment", async (req, res) => {
     if (!blog) return res.status(404).json({ message: "Blog not found" });
 
     blog.comments.push({
-      name: "Anonymous",
+      name: req.body.name || "Anonymous",
       text: req.body.text,
     });
 
     await blog.save();
-    res.json({ comments: blog.comments });
+    res.json({ totalComments: blog.comments.length, comments: blog.comments });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
@@ -48,7 +47,7 @@ router.put("/:id/view", async (req, res) => {
     );
     if (!blog) return res.status(404).json({ message: "Blog not found" });
 
-    res.json({ views: blog.views });
+    res.json({ totalViews: blog.views });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }

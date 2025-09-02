@@ -8,29 +8,25 @@ const blogSchema = new mongoose.Schema(
     category: { type: String, default: "General", trim: true },
     tags: { type: [String], default: [] },
 
-    author: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
-      required: true,
-    },
+    // 👇 Author can still be required
+    author: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
 
-    // ✅ one views field only
-    views: { type: Number, default: 0 },
+    // Likes stored as IPs (strings)
+    likes: [{ type: String }],
 
-    // ✅ likes as strings (not ObjectId)
-    likes: { type: [String], default: [] },
-
-    // ✅ comments without requiring login
+    // Anonymous comments
     comments: [
       {
+        name: { type: String, default: "Anonymous" },
         text: { type: String, required: true },
-        author: { type: String, default: "Anonymous" },
         createdAt: { type: Date, default: Date.now },
       },
     ],
+
+    // Views counter
+    views: { type: Number, default: 0 },
   },
   { timestamps: true }
 );
 
-// ✅ Prevent OverwriteModelError on Vercel
 export default mongoose.models.Blog || mongoose.model("Blog", blogSchema);
