@@ -6,26 +6,16 @@ export const createBlog = async (req, res) => {
   try {
     let image = "";
 
-    // If uploaded via multer
     if (req.file) {
       const uploaded = await cloudinary.uploader.upload(req.file.path);
       image = uploaded.secure_url;
-    }
-    // If raw image string passed (base64 or file path)
-    else if (req.body.image && !req.body.image.startsWith("http")) {
+    } else if (req.body.image) {
       const uploaded = await cloudinary.uploader.upload(req.body.image);
       image = uploaded.secure_url;
     }
-    // If frontend already sent a Cloudinary URL
-    else if (req.body.image && req.body.image.startsWith("http")) {
-      image = req.body.image;
-    }
 
     const blog = new Blog({
-      title: req.body.title,
-      content: req.body.content,
-      category: req.body.category,
-      tags: req.body.tags || [],
+      ...req.body,
       image,
       author: req.user._id, // from JWT middleware
     });
@@ -123,54 +113,40 @@ export const deleteBlog = async (req, res) => {
   }
 };
 
-// ✅ Like blog without login
+// ✅ Like / Unlike Blog
 export const likeBlog = async (req, res) => {
   try {
     const blog = await Blog.findById(req.params.id);
     if (!blog) return res.status(404).json({ message: "Blog not found" });
 
-    const ip = req.ip; // use IP instead of user ID
-
-    if (blog.likes.includes(ip)) {
-      blog.likes = blog.likes.filter((addr) => addr !== ip); // unlike
+    if (blog.likes.includes(req.user._id)) {
+      blog.likes = blog.likes.filter(id => id.toString() !== req.user._id);
     } else {
-      blog.likes.push(ip); // like
+      blog.likes.push(req.user._id);
     }
 
     await blog.save();
-
-    res.json({
-      likes: blog.likes.length,
-      comments: blog.comments.length,
-      views: blog.views || 0,
-    });
+    res.json(blog);
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    res.status(500).json({ error: err.message });
   }
 };
 
-// ✅ Comment without login
-export const addComment = async (req, res) => {
+// ✅ Comment on Blog
+export const commentBlog = async (req, res) => {
   try {
     const blog = await Blog.findById(req.params.id);
     if (!blog) return res.status(404).json({ message: "Blog not found" });
 
-    const comment = {
+    blog.comments.push({
+      user: req.user._id,
       text: req.body.text,
-      author: "Anonymous", // since no login
-      date: new Date(),
-    };
-
-    blog.comments.push(comment);
-    await blog.save();
-
-    res.json({
-      comments: blog.comments,
-      totalComments: blog.comments.length,
-      likes: blog.likes.length,
-      views: blog.views || 0,
+      createdAt: new Date(),
     });
+
+    await blog.save();
+    res.json(blog);
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    res.status(500).json({ error: err.message });
   }
 };
