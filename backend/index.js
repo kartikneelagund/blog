@@ -1,32 +1,27 @@
+// backend/api/index.js
 import express from "express";
 import mongoose from "mongoose";
 import dotenv from "dotenv";
 import cors from "cors";
 
-import authRoutes from "./routes/auth.js";
-import blogRoutes from "./routes/blog.js";
-import userRoutes from "./routes/user.js";
-import adminRoutes from "./routes/adminRoutes.js";
+import authRoutes from "../routes/auth.js";
+import blogRoutes from "../routes/blog.js";
+import userRoutes from "../routes/user.js";
+import adminRoutes from "../routes/adminRoutes.js";
 
-dotenv.config(); // load .env first
+dotenv.config();
 
 const app = express();
 
 // ==================
 // Middleware
 // ==================
-const allowedOrigins = [
-  "http://localhost:5173",  // local frontend
-  "https://blog-33js.vercel.app" // deployed frontend (no trailing slash!)
-];
-
 app.use(
   cors({
-    origin: allowedOrigins,
+    origin: ["http://localhost:5173", "https://blog-33js.vercel.app"],
     credentials: true,
   })
 );
-
 app.use(express.json({ limit: "10mb" }));
 
 // ==================
@@ -35,26 +30,22 @@ app.use(express.json({ limit: "10mb" }));
 app.use("/api/auth", authRoutes);
 app.use("/api/blogs", blogRoutes);
 app.use("/api/users", userRoutes);
-app.use("/api/admin", adminRoutes); // moved here, correct prefix
+app.use("/api/admin", adminRoutes);
 
 app.get("/", (req, res) => {
-  res.send("✅ Backend is running!");
+  res.send("✅ Backend running on Vercel!");
 });
 
 // ==================
-// DB + Server Start
+// MongoDB
 // ==================
-console.log("MONGO_URI:", process.env.MONGO_URI ? " Loaded" : "❌ Missing");
-console.log("JWT_SECRET:", process.env.JWT_SECRET ? " Loaded" : "❌ Missing");
-
 mongoose
-  .connect(process.env.MONGO_URI)
-  .then(() => {
-    const PORT = process.env.PORT || 5000;
-    app.listen(PORT, () =>
-      console.log(` Server running on port ${PORT}`)
-    );
-  })
-  .catch((err) => console.error(" DB Connection Error:", err));
+  .connect(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true })
+  .then(() => console.log("✅ MongoDB connected"))
+  .catch((err) => console.error("❌ DB Error:", err));
 
-export default app;
+// ==================
+// Export for Vercel
+// ==================
+import serverless from "serverless-http";
+export const handler = serverless(app);
