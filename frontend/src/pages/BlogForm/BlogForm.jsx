@@ -1,147 +1,177 @@
-// src/pages/BlogForm/BlogForm.jsx
-import { useState, useEffect } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
 import api from "../../utils/api";
-import Editor from "../../components/Editor/Editor";
-import "./BlogForm.css";
+import { useAuth } from "../../context/AuthContext";
+import "./Admin.css";
 
-const CLOUD_NAME = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME || "your_cloud_name";
-const UPLOAD_PRESET = import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET || "your_preset";
+export default function Admin() {
+  const { user } = useAuth();
+  const [users, setUsers] = useState([]);
+  const [stats, setStats] = useState({
+    totalUsers: 0,
+    totalBlogs: 0,
+    totalViews: 0,
+    totalLikes: 0,
+  });
+  const [editingUser, setEditingUser] = useState(null);
+  const [formData, setFormData] = useState({ username: "", email: "" });
 
-export default function BlogForm() {
-  const { id } = useParams();
-  const navigate = useNavigate();
-  const [form, setForm] = useState({ title: "", content: "", category: "", tags: "" });
-  const [image, setImage] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
-
-  const token = localStorage.getItem("token");
-
+  // Fetch users + stats
   useEffect(() => {
-    if (!id) return;
-    const fetchBlog = async () => {
-      try {
-        const res = await api.get(`/blogs/${id}`);
-        const b = res.data;
-        setForm({
-          title: b.title || "",
-          content: b.content || "",
-          category: b.category || "",
-          tags: (b.tags || []).join(", "),
-        });
-        setImage(b.image || "");
-      } catch (err) {
-        console.error("Error fetching blog:", err.response?.data || err.message);
-      }
-    };
-    fetchBlog();
-  }, [id]);
+    if (!user?.isAdmin) return;
 
-  const onChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
+    // Fetch all users
+    api
+      .get("/users/all")
+      .then((res) => setUsers(res.data || []))
+      .catch((err) => console.error(err));
 
-  const uploadImage = async (e) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    setLoading(true);
+    // Fetch stats
+    api
+      .get("/admin/stats")
+      .then((res) => setStats(res.data))
+      .catch((err) => console.error(err));
+  }, [user?.isAdmin]);
+
+  if (!user?.isAdmin) {
+    return (
+      <div className="admin container">
+        <h3>Access Denied</h3>
+      </div>
+    );
+  }
+
+  // Start editing
+  const handleEdit = (u) => {
+    setEditingUser(u._id);
+    setFormData({ username: u.username, email: u.email });
+  };
+
+  // Save update
+  const handleUpdate = async (id) => {
     try {
-      const fd = new FormData();
-      fd.append("file", file);
-      fd.append("upload_preset", UPLOAD_PRESET);
-      const url = `https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`;
-      const res = await fetch(url, { method: "POST", body: fd });
-      const data = await res.json();
-      setImage(data.secure_url);
+      const res = await api.put(`/users/${id}`, formData);
+      setUsers(users.map((u) => (u._id === id ? res.data : u)));
+      setEditingUser(null);
     } catch (err) {
-      console.error("Image upload error:", err);
-      alert("Failed to upload image");
-    } finally {
-      setLoading(false);
+      console.error(err);
     }
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (!token) {
-      alert("You must be logged in to create/update a blog.");
-      return;
-    }
+  // Cancel editing
+  const handleCancel = () => {
+    setEditingUser(null);
+    setFormData({ username: "", email: "" });
+  };
 
-    const payload = {
-      title: form.title,
-      content: form.content,
-      category: form.category,
-      tags: form.tags.split(",").map((t) => t.trim()).filter(Boolean),
-      image,
-    };
-
-    setLoading(true);
-    setError("");
-
+  // Delete user
+  const handleDelete = async (id) => {
+    if (!window.confirm("Are you sure you want to delete this user?")) return;
     try {
-      if (id) {
-        // PUT request with token
-        await api.put(`/blogs/${id}`, payload, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-      } else {
-        // POST request with token
-        await api.post("/blogs", payload, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-      }
-      navigate("/"); // Redirect to home after success
+      await api.delete(`/users/${id}`);
+      setUsers(users.filter((u) => u._id !== id));
     } catch (err) {
-      console.error("Blog submit error:", err.response?.data || err.message);
-      setError(err.response?.data?.message || "Failed to submit blog");
-    } finally {
-      setLoading(false);
+      console.error(err);
     }
   };
 
   return (
-    <form className="blog-form" onSubmit={handleSubmit}>
-      <h2>{id ? "Edit Blog" : "Create Blog"}</h2>
+    <div className="admin container">
+      <h2>Admin Panel</h2>
 
-      {error && <p className="error">{error}</p>}
+      {/* 🔹 Stats Section */}
+      <div className="stats-grid">
+        <div className="stat-card">
+          <h4>Total Users</h4>
+          <p>{stats.totalUsers}</p>
+        </div>
+        <div className="stat-card">
+          <h4>Total Blogs</h4>
+          <p>{stats.totalBlogs}</p>
+        </div>
+        <div className="stat-card">
+          <h4>Total Views</h4>
+          <p>{stats.totalViews}</p>
+        </div>
+        <div className="stat-card">
+          <h4>Total Likes</h4>
+          <p>{stats.totalLikes}</p>
+        </div>
+      </div>
 
-      <input
-        name="title"
-        placeholder="Title"
-        value={form.title}
-        onChange={onChange}
-        required
-      />
-
-      <input
-        name="category"
-        placeholder="Category"
-        value={form.category}
-        onChange={onChange}
-      />
-
-      <input
-        name="tags"
-        placeholder="Tags (comma separated)"
-        value={form.tags}
-        onChange={onChange}
-      />
-
-      <Editor
-        value={form.content}
-        onChange={(value) => setForm({ ...form, content: value })}
-      />
-
-      <label className="file-label">
-        <span>{loading ? "Uploading..." : "Upload Image"}</span>
-        <input type="file" accept="image/*" onChange={uploadImage} />
-      </label>
-
-      {image && <img className="preview" src={image} alt="preview" />}
-
-      <button type="submit" disabled={loading}>
-        {id ? "Update" : "Post"}
-      </button>
-    </form>
+      {/* 🔹 Users Table */}
+      <h3>Manage Users</h3>
+      <table className="users-table">
+        <thead>
+          <tr>
+            <th>Username</th>
+            <th>Email</th>
+            <th style={{ textAlign: "center" }}>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {users.map((u) => (
+            <tr key={u._id}>
+              <td>
+                {editingUser === u._id ? (
+                  <input
+                    type="text"
+                    value={formData.username}
+                    onChange={(e) =>
+                      setFormData({ ...formData, username: e.target.value })
+                    }
+                  />
+                ) : (
+                  u.username
+                )}
+              </td>
+              <td>
+                {editingUser === u._id ? (
+                  <input
+                    type="email"
+                    value={formData.email}
+                    onChange={(e) =>
+                      setFormData({ ...formData, email: e.target.value })
+                    }
+                  />
+                ) : (
+                  u.email
+                )}
+              </td>
+              <td style={{ textAlign: "center" }}>
+                {editingUser === u._id ? (
+                  <>
+                    <button
+                      className="btn save"
+                      onClick={() => handleUpdate(u._id)}
+                    >
+                      Save
+                    </button>
+                    <button className="btn cancel" onClick={handleCancel}>
+                      Cancel
+                    </button>
+                  </>
+                ) : (
+                  <>
+                    <button
+                      className="btn edit"
+                      onClick={() => handleEdit(u)}
+                    >
+                      Edit
+                    </button>
+                    <button
+                      className="btn delete"
+                      onClick={() => handleDelete(u._id)}
+                    >
+                      Delete
+                    </button>
+                  </>
+                )}
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
   );
 }
+
