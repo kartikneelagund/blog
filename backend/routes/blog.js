@@ -1,71 +1,23 @@
-import mongoose from "mongoose";
+import express from "express";
+import {
+  createBlog,
+  getAllBlogs,
+  getBlogById,
+  updateBlog,
+  deleteBlog,
+  likeBlog,
+  commentBlog
+} from "../controllers/blog.js";
+import { verifyToken } from "../middleware/auth.js";
 
-const blogSchema = new mongoose.Schema(
-  {
-    title: {
-      type: String,
-      required: true,
-      trim: true,
-    },
-    content: {
-      type: String,
-      default: "",
-    },
-    image: {
-      type: String,
-      default: "", // optional
-    },
-    category: {
-      type: String,
-      default: "General",
-      trim: true,
-    },
-    tags: {
-      type: [String],
-      default: [],
-    },
-    author: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
-      required: true,
-    },
+const router = express.Router();
 
-    // 👇 New field for tracking views
-    views: {
-      type: Number,
-      default: 0,
-    },
+router.get("/", getAllBlogs);
+router.get("/:id", getBlogById);
+router.post("/", verifyToken, createBlog);
+router.put("/:id", verifyToken, updateBlog); // update by author only
+router.delete("/:id", verifyToken, deleteBlog); // delete by author or admin
+router.put("/:id/like", verifyToken, likeBlog);
+router.post("/:id/comment", verifyToken, commentBlog);
 
-    // Likes as an array of user references
-    likes: [
-      {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "User",
-      },
-    ],
-
-    // Comments embedded
-    comments: [
-      {
-        user: {
-          type: mongoose.Schema.Types.ObjectId,
-          ref: "User",
-          required: true,
-        },
-        text: {
-          type: String,
-          required: true,
-        },
-        createdAt: {
-          type: Date,
-          default: Date.now,
-        },
-      },
-    ],
-  },
-  {
-    timestamps: true, // createdAt + updatedAt
-  }
-);
-
-export default mongoose.model("Blog", blogSchema);
+export default router;
