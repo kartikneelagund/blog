@@ -16,7 +16,7 @@ const app = express();
 // ==================
 const allowedOrigins = [
   "http://localhost:5173",  // local frontend
-  "https://blog-new-frontend-five.vercel.app" // deployed frontend (no trailing slash!)
+  "https://blog-33js.vercel.app" // deployed frontend (no trailing slash!)
 ];
 
 app.use(
