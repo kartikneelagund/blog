@@ -59,28 +59,18 @@ export const updateBlog = async (req, res) => {
     }
 
     let image = blog.image;
-
-    // If new file uploaded
     if (req.file) {
       const uploaded = await cloudinary.uploader.upload(req.file.path);
       image = uploaded.secure_url;
-    }
-    // If base64 string provided
-    else if (req.body.image && !req.body.image.startsWith("http")) {
+    } else if (req.body.image && req.body.image !== blog.image && !req.body.image.startsWith("http")) {
       const uploaded = await cloudinary.uploader.upload(req.body.image);
       image = uploaded.secure_url;
     }
-    // If Cloudinary URL provided (replace existing)
-    else if (req.body.image && req.body.image.startsWith("http")) {
-      image = req.body.image;
-    }
-    // If no image field sent, keep old image
 
     const updateFields = {
-      title: req.body.title ?? blog.title,
-      content: req.body.content ?? blog.content,
-      category: req.body.category ?? blog.category,
-      tags: req.body.tags ?? blog.tags,
+      title: req.body.title || blog.title,
+      content: req.body.content || blog.content,
+      category: req.body.category || blog.category,
       image,
     };
 
